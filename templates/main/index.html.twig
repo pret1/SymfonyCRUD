@@ -9,12 +9,30 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/var/www/html/src/Controller/MainController.php'|file_link(0) }}">src/Controller/MainController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/var/www/html/templates/main/index.html.twig'|file_link(0) }}">templates/main/index.html.twig</a></code></li>
-    </ul>
+    <button type="button" class="btn btn-primary">Add+</button>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Genre</th>
+            <th scope="col">Age</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for author in authors %}
+        <tr>
+            <th scope="row">{{ author.id }}</th>
+            <td>{{ author.name }}</td>
+            <td>{{ author.genre }}</td>
+            <td>{{ author.age }}</td>
+            <td><button type="button" class="btn btn-warning">Edit</button></td>
+            <td><button type="button" class="btn btn-danger">Delete</button></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
