@@ -23,12 +23,21 @@ class AuthorController extends AbstractController
 //    }
 
     #[Route('/author', name: 'add_author')]
-    public function add(Request $request): Response
+    public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $author = new Author();
         $form = $this->createForm(AuthorType::class, $author);
 
-        return $this->render('author/index.html.twig', [
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $author = $form->getData();
+            $entityManager->persist($author);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Create success');
+            return $this->redirectToRoute('app_main');
+        }
+        return $this->render('author/add.html.twig', [
             'form' => $form,
         ]);
 
@@ -60,9 +69,24 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/author/edit/{id}', name: 'edit_author')]
-    public function edit(): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
     {
+        $repository = $entityManager->getRepository(Author::class);
+        $author = $repository->find($id);
+        $form = $this->createForm(AuthorType::class, $author);
 
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $author = $form->getData();
+            $entityManager->persist($author);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Success update');
+            return $this->redirectToRoute('app_main');
+        }
+        return $this->render('author/edit.html.twig', [
+            'form' => $form,
+        ]);
     }
 
     #[Route('/author/delete/{id}', name: 'delete_author')]
@@ -73,6 +97,7 @@ class AuthorController extends AbstractController
         $entityManager->remove($author);
         $entityManager->flush();
 
+        $this->addFlash('success', 'Success delete');
         return $this->redirectToRoute('app_main');
     }
 }

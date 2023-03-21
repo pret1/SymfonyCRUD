@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AuthorController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h4>Edit author</h4>
+{#    {{ form(form) }}#}
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name, {'attr':{'class':'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.genre) }}
+            {{ form_widget(form.genre, {'attr':{'class':'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.age) }}
+            {{ form_widget(form.age, {'attr':{'class':'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            <button class="btn btn-success">Update</button>
+        </div>
+
+{#        {{ form(form) }}#}
+{#    <button class="btn btn-success">Submit</button>#}
+    {{ form_end(form) }}
+</div>
+{% endblock %}
