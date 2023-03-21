@@ -9,7 +9,9 @@
 </style>
 
 <div class="example-wrapper">
-    <button type="button" class="btn btn-primary">Add+</button>
+{#    <button class="btn btn-primary" href="{{ path('add_author') }}"><a>Add+</a></button>#}
+{#    <button class="btn btn-primary"><a href="{{ path('add_author') }}">Add+</a></button>#}
+    <a type="button" class="btn btn-primary" href="{{ path('add_author') }}">Add+</a>
     <table class="table">
         <thead>
         <tr>
@@ -17,8 +19,7 @@
             <th scope="col">Name</th>
             <th scope="col">Genre</th>
             <th scope="col">Age</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
+            <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -28,8 +29,11 @@
             <td>{{ author.name }}</td>
             <td>{{ author.genre }}</td>
             <td>{{ author.age }}</td>
-            <td><button type="button" class="btn btn-warning">Edit</button></td>
-            <td><button type="button" class="btn btn-danger">Delete</button></td>
+            <td>
+                <a type="button" class="btn btn-secondary" href="{{ path('show_author', {'id': author.id}) }}">Show</a>
+                <a type="button" class="btn btn-warning" href="{{ path('edit_author', {'id': author.id}) }}">Edit</a>
+                <a type="button" class="btn btn-danger" href="{{ path('delete_author', {'id': author.id}) }}">Delete</a>
+            </td>
         </tr>
         {% endfor %}
         </tbody>

@@ -5,9 +5,11 @@ namespace App\Controller;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Author;
+use App\Form\AuthorType;
 use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -21,8 +23,14 @@ class AuthorController extends AbstractController
 //    }
 
     #[Route('/author', name: 'add_author')]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function add(Request $request): Response
     {
+        $author = new Author();
+        $form = $this->createForm(AuthorType::class, $author);
+
+        return $this->render('author/index.html.twig', [
+            'form' => $form,
+        ]);
 
 //        $author = new Author();
 //        $author->setName('Tolkien');
@@ -40,15 +48,31 @@ class AuthorController extends AbstractController
 //        ]);
     }
 
-    #[Route('/author/all', name: 'app_author')]
-    public function show(EntityManagerInterface $entityManager): Response
+    #[Route('/author/{id}', name: 'show_author')]
+    public function show(EntityManagerInterface $entityManager, int $id): Response
     {
         $repository = $entityManager->getRepository(Author::class);
-        $author = $repository->findAll();
+        $author = $repository->find($id);
 
-        return $this->render('author/index.html.twig', [
-            'controller_name' => 'AuthorController',
-            'authors' => $author
+        return $this->render('author/show.html.twig', [
+            'author' => $author
         ]);
+    }
+
+    #[Route('/author/edit/{id}', name: 'edit_author')]
+    public function edit(): Response
+    {
+
+    }
+
+    #[Route('/author/delete/{id}', name: 'delete_author')]
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $repository = $entityManager->getRepository(Author::class);
+        $author = $repository->find($id);
+        $entityManager->remove($author);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_main');
     }
 }
