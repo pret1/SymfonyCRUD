@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\AuthorManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
@@ -16,17 +17,19 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class AuthorController extends AbstractController
 {
-    #[Route('/author', name: 'add_author')]
-    public function add(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $author = new Author();
-        $form = $this->createForm(AuthorType::class, $author);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $author = $form->getData();
-            $entityManager->persist($author);
-            $entityManager->flush();
 
+    private AuthorManager $authorManager;
+
+    public function __construct(AuthorManager $authorManager)
+    {
+        $this->authorManager = $authorManager;
+    }
+
+    #[Route('/author', name: 'add_author')]
+    public function add(Request $request): Response
+    {
+        $form = $this->authorManager->updateAuthor($request);
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->addFlash('success', 'Success');
             return $this->redirectToRoute('app_main');
         }
@@ -36,28 +39,19 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/author/{id}', name: 'show_author')]
-    public function show(EntityManagerInterface $entityManager, int $id): Response
+    public function show(int $id): Response
     {
-        $repository = $entityManager->getRepository(Author::class);
-        $author = $repository->find($id);
-
+        $author = $this->authorManager->getAuthor($id);
         return $this->render('author/show.html.twig', [
             'author' => $author
         ]);
     }
 
     #[Route('/author/edit/{id}', name: 'edit_author')]
-    public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
+    public function edit(Request $request, $id): Response
     {
-        $repository = $entityManager->getRepository(Author::class);
-        $author = $repository->find($id);
-        $form = $this->createForm(AuthorType::class, $author);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $author = $form->getData();
-            $entityManager->persist($author);
-            $entityManager->flush();
-
+        $form = $this->authorManager->updateAuthor($request, $id);
+        if ($form->isSubmitted() &&  $form->isValid()) {
             $this->addFlash('success', 'Success');
             return $this->redirectToRoute('app_main');
         }
@@ -67,12 +61,9 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/author/delete/{id}', name: 'delete_author')]
-    public function delete(EntityManagerInterface $entityManager, int $id): Response
+    public function delete(int $id): Response
     {
-        $repository = $entityManager->getRepository(Author::class);
-        $author = $repository->find($id);
-        $entityManager->remove($author);
-        $entityManager->flush();
+        $this->authorManager->deleteAuthor($id);
 
         $this->addFlash('success', 'Success delete');
         return $this->redirectToRoute('app_main');
