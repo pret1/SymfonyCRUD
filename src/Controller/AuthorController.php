@@ -15,12 +15,13 @@ use App\Form\AuthorType;
 use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
+#[Autoconfigure(calls: [['setAuthorManager' => ['@manager.author']]])]
 class AuthorController extends AbstractController
 {
 
     private AuthorManager $authorManager;
 
-    public function __construct(AuthorManager $authorManager)
+    public function setAuthorManager(AuthorManager $authorManager)
     {
         $this->authorManager = $authorManager;
     }
