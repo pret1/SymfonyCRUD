@@ -19,6 +19,7 @@
             <th scope="col">Name</th>
             <th scope="col">Genre</th>
             <th scope="col">Age</th>
+            <th scope="col">Image</th>
             <th scope="col">Actions</th>
         </tr>
         </thead>
@@ -29,6 +30,7 @@
             <td>{{ author.name }}</td>
             <td>{{ author.genre }}</td>
             <td>{{ author.age }}</td>
+            <td><a href="{{ asset('uploads/images/' ~ author.image) }}">View author image</a></td>
             <td>
                 <a type="button" class="btn btn-secondary" href="{{ path('show_author', {'id': author.id}) }}">Show</a>
                 <a type="button" class="btn btn-warning" href="{{ path('edit_author', {'id': author.id}) }}">Edit</a>

@@ -50,9 +50,9 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/author/edit/{id}', name: 'edit_author')]
-    public function edit(Request $request, $id): Response
+    public function edit(Request $request, SluggerInterface $slugger, $id): Response
     {
-        $form = $this->authorManager->updateAuthor($request, $id);
+        $form = $this->authorManager->updateAuthor($request, $slugger, $id);
         if ($form->isSubmitted() &&  $form->isValid()) {
             $this->addFlash('success', 'Success');
             return $this->redirectToRoute('app_main');
