@@ -6,6 +6,7 @@ use App\Entity\Author;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class AuthorType extends AbstractType
 {
@@ -15,6 +16,11 @@ class AuthorType extends AbstractType
             ->add('name')
             ->add('genre')
             ->add('age')
+            ->add('image', FileType::class, [
+                'label' => 'image Author',
+                'mapped' => false,
+                'required' => false,
+            ])
         ;
     }
 

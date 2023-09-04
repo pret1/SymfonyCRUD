@@ -8,20 +8,30 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Psr\Log\LoggerInterface;
 
-class AuthorManager
+class AuthorManager extends AbstractController
 {
 
     private EntityManagerInterface $entityManager;
     private FormFactoryInterface $formFactory;
+    private LoggerInterface $logger;
 
-    public function __construct(EntityManagerInterface $entityManager, FormFactoryInterface $formFactory)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        FormFactoryInterface $formFactory,
+        LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->formFactory = $formFactory;
+        $this->logger = $logger;
     }
 
-    public function updateAuthor(Request $request, ?int $id = null): ?FormInterface
+    public function updateAuthor(Request $request, SluggerInterface $slugger, ?int $id = null): ?FormInterface
     {
         if($id === null){
             $author = new Author();
@@ -33,6 +43,24 @@ class AuthorManager
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    $this->logger->error('An error occurred in updateAuthor ' . $e->getMessage());
+                }
+
+                $author->setImage($newFilename);
+            }
             $author = $form->getData();
             $this->entityManager->persist($author);
             $this->entityManager->flush();

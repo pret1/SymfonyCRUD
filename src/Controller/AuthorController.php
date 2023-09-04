@@ -14,6 +14,7 @@ use App\Entity\Author;
 use App\Form\AuthorType;
 use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Autoconfigure(calls: [['setAuthorManager' => ['@manager.author']]])]
 class AuthorController extends AbstractController
@@ -27,9 +28,9 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/author', name: 'add_author')]
-    public function add(Request $request): Response
+    public function add(Request $request, SluggerInterface $slugger): Response
     {
-        $form = $this->authorManager->updateAuthor($request);
+        $form = $this->authorManager->updateAuthor($request, $slugger);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->addFlash('success', 'Success');
             return $this->redirectToRoute('app_main');
