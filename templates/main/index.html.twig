@@ -8,7 +8,7 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<a href="/{{ app.user.email ? 'logout' : 'login'}}">{{ app.user.email ? 'Logout' : 'Login' }}</a>
+<a href="/{{ app.user ? 'logout' : 'login'}}">{{ app.user ? 'Logout' : 'Login' }}</a>
 <div class="example-wrapper">
 {#    <button class="btn btn-primary" href="{{ path('add_author') }}"><a>Add+</a></button>#}
 {#    <button class="btn btn-primary"><a href="{{ path('add_author') }}">Add+</a></button>#}
